@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09051b">
+  <title>Distrito 99</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    :root { color-scheme: dark; --pink:#ff00b8; --cyan:#00eaff; --violet:#592cff; --tile-w:250px; --tile-h:112px; }
+    * { box-sizing: border-box; }
+    html, body { width:100%; min-height:100%; margin:0; }
+    body { min-height:100vh; min-height:100dvh; position:relative; isolation:isolate; overflow-x:hidden; }
+    .mosaic {
+      position:fixed; z-index:-1; inset:-100px; overflow:hidden; pointer-events:none;
+      background:linear-gradient(125deg,#08071c 0%,#250640 30%,#111044 56%,#06374a 78%,#09051b 100%);
+      background-size:180% 180%;
+      animation:gradient-breathe 10s ease-in-out infinite alternate;
+    }
+    .mosaic::before { content:""; position:absolute; inset:-18%; pointer-events:none; }
+    .mosaic::before {
+      background:radial-gradient(ellipse at 15% 25%,#ff00b86b,transparent 37%),
+                 radial-gradient(ellipse at 78% 72%,#00eaff45,transparent 38%),
+                 radial-gradient(ellipse at 55% 10%,#592cff55,transparent 40%);
+      animation:aurora 12s ease-in-out infinite alternate;
+    }
+    .mosaic-row {
+      position:absolute; left:-110px; width:var(--row-width); height:var(--tile-h);
+      background-image:url("logo-distrito99-tile.png"); background-repeat:repeat-x;
+      background-size:var(--tile-w) auto; background-position:0 center;
+      animation:row-slide var(--duration,54s) linear var(--delay,0s) infinite alternate;
+      will-change:transform;
+    }
+    .mosaic-row.staggered { background-position:calc(var(--tile-w) / 2) center; }
+    .mosaic-row.reverse { animation-direction:reverse; }
+    @keyframes row-slide { from { transform:translate3d(0,0,0); } to { transform:translate3d(-50%,0,0); } }
+    @keyframes aurora { from { transform:translate3d(-2%,0,0) scale(.96); opacity:.75; } to { transform:translate3d(2%,-2%,0) scale(1.08); opacity:1; } }
+    @keyframes gradient-breathe { from { background-position:0% 50%; } to { background-position:100% 50%; } }
+    @keyframes border-breathe {
+      from { opacity:.52; filter:brightness(.78) drop-shadow(0 0 4px #ff00b855) drop-shadow(0 0 7px #592cff44); }
+      to { opacity:1; filter:brightness(1.25) drop-shadow(0 0 8px #ff00b899) drop-shadow(0 0 15px #00eaff88); }
+    }
+    .rules-toggle {
+      position:fixed; z-index:3; top:50%; right:0; transform:translateY(-50%);
+      padding:15px 12px; border:1px solid #00eaffaa; border-right:0; border-radius:12px 0 0 12px;
+      color:#fff; background:linear-gradient(135deg,#211044ee,#071c2bee);
+      box-shadow:0 0 18px #00eaff55,0 0 24px #ff00b833; cursor:pointer;
+      font:700 12px Arial,Helvetica,sans-serif; letter-spacing:.12em; writing-mode:vertical-rl;
+      transition:opacity .2s ease,visibility .2s ease,box-shadow .2s ease;
+    }
+    .rules-toggle.is-hidden { opacity:0; visibility:hidden; pointer-events:none; }
+    .rules-toggle:hover,.rules-toggle:focus-visible { outline:none; box-shadow:0 0 24px #00eaffaa,0 0 30px #ff00b866; }
+    .rules-panel {
+      position:fixed; z-index:4; top:50%; right:max(16px,env(safe-area-inset-right));
+      width:min(410px,calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+      height:auto; max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px);
+      display:flex; flex-direction:column; padding:28px 24px 22px;
+      color:#fff; background:linear-gradient(155deg,#130b25e8,#090d1ce8 65%,#071b27e8);
+      border:1px solid transparent; border-radius:28px;
+      box-shadow:-14px 0 38px #0009,0 0 26px #ff00b844;
+      transform:translate(110%,-50%); visibility:hidden;
+      transition:transform .45s cubic-bezier(.2,.8,.2,1),visibility .45s;
+      overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y;
+      scrollbar-width:none; -ms-overflow-style:none;
+    }
+    .rules-panel::-webkit-scrollbar { display:none; }
+    .rules-panel::before {
+      content:""; position:absolute; z-index:0; inset:-1px; padding:2px; border-radius:inherit;
+      background:linear-gradient(125deg,var(--pink),var(--violet),var(--cyan),var(--pink));
+      -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none;
+      opacity:.65; filter:brightness(.85) drop-shadow(0 0 5px #ff00b866);
+      animation:border-breathe 2.8s ease-in-out infinite alternate;
+    }
+    .rules-panel > * { position:relative; z-index:1; }
+    .rules-panel.open { transform:translate(0,-50%); visibility:visible; }
+    .rules-heading { display:flex; justify-content:space-between; align-items:center; gap:14px; padding-bottom:18px; border-bottom:1px solid #00eaff55; }
+    .rules-heading h2 { margin:0; color:#fff; font-size:clamp(16px,5vw,21px); letter-spacing:.08em; text-transform:uppercase; text-shadow:0 0 14px #ff00b877; overflow-wrap:anywhere; }
+    .rules-heading h2 span { color:var(--cyan); }
+    .rules-close { width:40px; height:40px; flex:none; display:grid; place-items:center; border:1px solid #ff00b888; border-radius:50%; color:#fff; background:#ff00b81a; font-size:17px; cursor:pointer; transition:transform .25s ease,background .25s ease,box-shadow .25s ease,color .25s ease; }
+    .rules-close:hover,.rules-close:focus-visible { outline:none; color:#080612; background:var(--pink); transform:rotate(90deg) scale(1.08); box-shadow:0 0 18px #ff00b899,0 0 25px #00eaff55; }
+    .rules-list { display:grid; gap:10px; margin:22px 0 0; padding:0; list-style:none; counter-reset:rule; }
+    .rules-list li { counter-increment:rule; display:grid; grid-template-columns:24px 27px minmax(0,1fr); align-items:center; gap:9px; padding:11px 12px; border:1px solid #ffffff16; border-radius:13px; color:#e9e6f2; background:linear-gradient(100deg,#ff00b812,#00eaff0b); font-size:14px; line-height:1.4; overflow-wrap:anywhere; transition:transform .22s ease,border-color .22s ease,background .22s ease,box-shadow .22s ease; }
+    .rules-list li::before { content:counter(rule,decimal-leading-zero); color:var(--cyan); font-weight:700; text-shadow:0 0 10px #00eaff88; }
+    .rules-list li:hover { transform:translateX(-5px); border-color:#00eaff99; background:linear-gradient(100deg,#ff00b82a,#00eaff20); box-shadow:0 0 17px #00eaff20,0 0 15px #ff00b81c; }
+    .rule-icon { color:#ff56d1; font-size:15px; text-align:center; filter:drop-shadow(0 0 5px #ff00b866); transition:color .22s ease,transform .22s ease; }
+    .rules-list li:hover .rule-icon { color:var(--cyan); transform:scale(1.16); }
+    .rules-footer { margin-top:auto; padding:18px 14px 2px; color:#f3ddec; border-top:1px solid #ff00b84d; font-size:clamp(12px,3.5vw,13px); line-height:1.55; text-align:center; overflow-wrap:anywhere; }
+    .rules-footer i { margin-right:7px; color:var(--pink); }
+    .rules-backdrop { position:fixed; z-index:2; inset:0; background:transparent; opacity:0; visibility:hidden; transition:visibility .35s; }
+    .rules-backdrop.open { opacity:1; visibility:visible; }
+    .rules-footer-site { display:block; margin-top:8px; color:var(--cyan); font-weight:700; letter-spacing:.08em; text-decoration:none; text-shadow:0 0 10px #00eaff77; }
+    .rules-footer-site:hover { color:#fff; }
+    @media (max-width:600px) {
+      :root { --tile-w:188px; --tile-h:88px; }
+      .rules-toggle { padding:13px 9px; font-size:11px; }
+      .rules-panel { top:50%; right:max(8px,env(safe-area-inset-right)); width:calc(100vw - 16px - env(safe-area-inset-left) - env(safe-area-inset-right)); max-height:calc(100vh - 24px); max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px); padding:clamp(16px,5vw,22px) clamp(12px,4vw,16px) 16px; border-radius:24px; }
+      .rules-heading { gap:8px; padding-bottom:14px; }
+      .rules-list { gap:8px; margin-top:15px; }
+      .rules-list li { grid-template-columns:22px 23px minmax(0,1fr); gap:7px; padding:9px 8px; font-size:13px; }
+      .rules-footer { padding:14px 5px 2px; }
+    }
+    @media (max-height:500px) and (orientation:landscape) {
+      .rules-panel { padding-top:12px; padding-bottom:12px; }
+      .rules-heading { padding-bottom:9px; }
+      .rules-list { gap:6px; margin-top:10px; }
+      .rules-list li { padding-top:7px; padding-bottom:7px; }
+      .rules-footer { padding-top:10px; }
+    }
+    @media (prefers-reduced-motion:reduce) { .rules-panel,.rules-backdrop,.rules-close,.rules-list li,.rule-icon { transition:none; }.rules-panel::before { animation-duration:18s; } }
+    body {
+      display:grid; place-items:center; padding:24px;
+      color:#fff; font-family:Arial,Helvetica,sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="mosaic" id="mosaic" aria-hidden="true"></div>
+  <button class="rules-toggle" id="rulesToggle" type="button" aria-controls="rulesPanel" aria-expanded="false">NORMATIVAS</button>
+  <div class="rules-backdrop" id="rulesBackdrop"></div>
+  <aside class="rules-panel" id="rulesPanel" role="dialog" aria-modal="true" aria-labelledby="rulesTitle" aria-hidden="true">
+    <div class="rules-heading">
+      <h2 id="rulesTitle">Normativas <span>Generales</span></h2>
+      <button class="rules-close" id="rulesClose" type="button" aria-label="Cerrar normativas"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    </div>
+    <ol class="rules-list">
+      <li><i class="rule-icon fa-solid fa-comment-slash" aria-hidden="true"></i><span>No Insultar.</span></li>
+      <li><i class="rule-icon fa-solid fa-shield-halved" aria-hidden="true"></i><span>Respetar al Staff.</span></li>
+      <li><i class="rule-icon fa-solid fa-bullhorn" aria-hidden="true"></i><span>No Spam.</span></li>
+      <li><i class="rule-icon fa-solid fa-comments" aria-hidden="true"></i><span>No Flood.</span></li>
+      <li><i class="rule-icon fa-solid fa-award" aria-hidden="true"></i><span>No Pedir Rango.</span></li>
+      <li><i class="rule-icon fa-solid fa-user-lock" aria-hidden="true"></i><span>No dar datos personales.</span></li>
+      <li><i class="rule-icon fa-solid fa-circle-exclamation" aria-hidden="true"></i><span>Prohibido Contenido +18.</span></li>
+      <li><i class="rule-icon fa-solid fa-music" aria-hidden="true"></i><span>No pedir Música.</span></li>
+      <li><i class="rule-icon fa-solid fa-gift" aria-hidden="true"></i><span>No pedir Days, Xats ni Powers.</span></li>
+      <li><i class="rule-icon fa-solid fa-gavel" aria-hidden="true"></i><span>No admin abuse. (Tener una razón válida.)</span></li>
+    </ol>
+    <footer class="rules-footer"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>El incumplimiento de las normativas conllevan a una sanción. Favor Respetar las normativas.<a class="rules-footer-site" href="https://www.distrito99.net" target="_blank" rel="noopener noreferrer">WwW.Distrito99.Net</a></footer>
+  </aside>
+  <script>
+    (() => {
+      const layer = document.getElementById('mosaic');
+      const rulesPanel = document.getElementById('rulesPanel');
+      const rulesToggle = document.getElementById('rulesToggle');
+      const rulesClose = document.getElementById('rulesClose');
+      const rulesBackdrop = document.getElementById('rulesBackdrop');
+      let resizeTimer;
+
+      function setRulesOpen(open) {
+        rulesPanel.classList.toggle('open', open);
+        rulesBackdrop.classList.toggle('open', open);
+        rulesToggle.classList.toggle('is-hidden', open);
+        rulesPanel.setAttribute('aria-hidden', String(!open));
+        rulesToggle.setAttribute('aria-expanded', String(open));
+        if (open) rulesClose.focus();
+        else rulesToggle.focus();
+      }
+
+      rulesToggle.addEventListener('click', () => setRulesOpen(true));
+      rulesClose.addEventListener('click', () => setRulesOpen(false));
+      rulesBackdrop.addEventListener('click', () => setRulesOpen(false));
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && rulesPanel.classList.contains('open')) setRulesOpen(false);
+      });
+
+      function buildMosaic() {
+        const tileWidth = window.innerWidth <= 600 ? 188 : 250;
+        const tileHeight = window.innerWidth <= 600 ? 88 : 112;
+        const gapY = window.innerWidth <= 600 ? 10 : 14;
+        const rows = Math.ceil((window.innerHeight + 220) / (tileHeight + gapY)) + 1;
+        const fragment = document.createDocumentFragment();
+
+        for (let row = 0; row < rows; row++) {
+          const line = document.createElement('div');
+          line.className = `mosaic-row${row % 2 ? ' staggered reverse' : ''}`;
+          line.style.top = `${row * (tileHeight + gapY) - 110}px`;
+          line.style.setProperty('--row-width', `${window.innerWidth * 2 + tileWidth * 2}px`);
+          line.style.setProperty('--duration', `${48 + (row % 3) * 8}s`);
+          line.style.setProperty('--delay', `${-(row % 9) * 2}s`);
+          fragment.appendChild(line);
+        }
+
+        layer.replaceChildren(fragment);
+      }
+
+      buildMosaic();
+      window.addEventListener('resize', () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(buildMosaic, 160);
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>
