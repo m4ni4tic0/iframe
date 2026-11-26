@@ -25,13 +25,17 @@
       animation:aurora 12s ease-in-out infinite alternate;
     }
     .mosaic-pattern {
-      position:absolute; inset:-100%; opacity:.76;
-      background-image:url("logo-distrito99-tile.png"); background-repeat:repeat;
-      background-size:var(--tile-w) auto; background-position:0 0;
+      position:absolute; left:-100vw; top:-100vh; width:300vw; height:300vh; opacity:.76;
       animation:diagonal-drift 72s linear infinite alternate;
       will-change:transform;
     }
-    @keyframes diagonal-drift { from { transform:translate3d(0,33.333%,0); } to { transform:translate3d(33.333%,0,0); } }
+    .mosaic-line {
+      position:absolute; left:0; width:100%; height:var(--tile-h);
+      background-image:url("logo-distrito99-tile.png"); background-repeat:repeat-x;
+      background-size:var(--tile-w) auto; background-position:0 center;
+    }
+    .mosaic-line.staggered { background-position:calc(var(--tile-w) / 2) center; }
+    @keyframes diagonal-drift { from { transform:translate3d(0,100vh,0); } to { transform:translate3d(100vw,0,0); } }
     @keyframes aurora { from { transform:translate3d(-2%,0,0) scale(.96); opacity:.75; } to { transform:translate3d(2%,-2%,0) scale(1.08); opacity:1; } }
     @keyframes gradient-breathe { from { background-position:0% 50%; } to { background-position:100% 50%; } }
     @keyframes border-breathe {
@@ -89,7 +93,7 @@
   </style>
 </head>
 <body>
-  <div class="mosaic" aria-hidden="true"><div class="mosaic-pattern"></div></div>
+  <div class="mosaic" aria-hidden="true"><div class="mosaic-pattern" id="mosaicPattern"></div></div>
   <aside class="rules-panel" id="rulesPanel" role="complementary" aria-labelledby="rulesTitle">
     <div class="rules-heading">
       <h2 id="rulesTitle">Normativas <span>Generales</span></h2>
@@ -107,5 +111,31 @@
       <li><i class="rule-icon fa-solid fa-gavel" aria-hidden="true"></i><span>No admin abuse. (Tener una razón válida.)</span></li>
     </ol>
   </aside>
+  <script>
+    (() => {
+      const pattern = document.getElementById('mosaicPattern');
+      let resizeTimer;
+
+      function buildMosaicLines() {
+        const lineHeight = window.innerWidth <= 600 ? 50 : 62;
+        const lineCount = Math.ceil((window.innerHeight * 3 + 300) / lineHeight);
+        const fragment = document.createDocumentFragment();
+
+        for (let lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+          const line = document.createElement('div');
+          line.className = `mosaic-line${lineIndex % 2 ? ' staggered' : ''}`;
+          line.style.top = `${lineIndex * lineHeight}px`;
+          fragment.appendChild(line);
+        }
+        pattern.replaceChildren(fragment);
+      }
+
+      buildMosaicLines();
+      window.addEventListener('resize', () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(buildMosaicLines, 180);
+      }, { passive:true });
+    })();
+  </script>
 </body>
 </html>
