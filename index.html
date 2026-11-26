@@ -7,7 +7,7 @@
   <title>Distrito 99</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <style>
-    :root { color-scheme: dark; --pink:#ff00b8; --cyan:#00eaff; --violet:#592cff; --tile-w:96px; --tile-h:54px; }
+    :root { color-scheme: dark; --pink:#ff00b8; --cyan:#00eaff; --violet:#592cff; --tile-w:96px; --tile-h:62px; }
     * { box-sizing: border-box; }
     html, body { width:100%; min-height:100%; margin:0; }
     body { min-height:100vh; min-height:100dvh; position:relative; isolation:isolate; overflow-x:hidden; }
@@ -15,7 +15,7 @@
       position:fixed; z-index:-1; inset:-100px; overflow:hidden; pointer-events:none;
       background:linear-gradient(125deg,#08071c 0%,#250640 30%,#111044 56%,#06374a 78%,#09051b 100%);
       background-size:180% 180%;
-      animation:gradient-breathe 10s ease-in-out infinite alternate;
+      animation:gradient-breathe 16s ease-in-out infinite alternate;
     }
     .mosaic::before { content:""; position:absolute; inset:-18%; pointer-events:none; }
     .mosaic::before {
@@ -24,16 +24,14 @@
                  radial-gradient(ellipse at 55% 10%,#592cff55,transparent 40%);
       animation:aurora 12s ease-in-out infinite alternate;
     }
-    .mosaic-row {
-      position:absolute; left:-110px; width:var(--row-width); height:var(--tile-h);
-      background-image:url("logo-distrito99-tile.png"); background-repeat:repeat-x;
-      background-size:var(--tile-w) auto; background-position:0 center;
-      animation:row-slide var(--duration,54s) linear var(--delay,0s) infinite alternate;
+    .mosaic-pattern {
+      position:absolute; inset:-100%; opacity:.76;
+      background-image:url("logo-distrito99-tile.png"); background-repeat:repeat;
+      background-size:var(--tile-w) auto; background-position:0 0;
+      animation:diagonal-drift 72s linear infinite alternate;
       will-change:transform;
     }
-    .mosaic-row.staggered { background-position:calc(var(--tile-w) / 2) center; }
-    .mosaic-row.reverse { animation-direction:reverse; }
-    @keyframes row-slide { from { transform:translate3d(0,0,0); } to { transform:translate3d(-50%,0,0); } }
+    @keyframes diagonal-drift { from { transform:translate3d(0,33.333%,0); } to { transform:translate3d(33.333%,0,0); } }
     @keyframes aurora { from { transform:translate3d(-2%,0,0) scale(.96); opacity:.75; } to { transform:translate3d(2%,-2%,0) scale(1.08); opacity:1; } }
     @keyframes gradient-breathe { from { background-position:0% 50%; } to { background-position:100% 50%; } }
     @keyframes border-breathe {
@@ -70,7 +68,7 @@
     .rule-icon { color:#ff56d1; font-size:15px; text-align:center; filter:drop-shadow(0 0 5px #ff00b866); transition:color .22s ease,transform .22s ease; }
     .rules-list li:hover .rule-icon { color:var(--cyan); transform:scale(1.16); }
     @media (max-width:600px) {
-      :root { --tile-w:76px; --tile-h:44px; }
+      :root { --tile-w:76px; --tile-h:50px; }
       .rules-panel { top:50%; right:max(6px,env(safe-area-inset-right)); width:min(205px,calc(100vw - 12px - env(safe-area-inset-left) - env(safe-area-inset-right))); padding:10px 7px 7px; border-radius:20px; }
       .rules-heading { gap:4px; padding-bottom:5px; }
       .rules-list { gap:3px; margin-top:5px; }
@@ -91,7 +89,7 @@
   </style>
 </head>
 <body>
-  <div class="mosaic" id="mosaic" aria-hidden="true"></div>
+  <div class="mosaic" aria-hidden="true"><div class="mosaic-pattern"></div></div>
   <aside class="rules-panel" id="rulesPanel" role="complementary" aria-labelledby="rulesTitle">
     <div class="rules-heading">
       <h2 id="rulesTitle">Normativas <span>Generales</span></h2>
@@ -109,37 +107,5 @@
       <li><i class="rule-icon fa-solid fa-gavel" aria-hidden="true"></i><span>No admin abuse. (Tener una razón válida.)</span></li>
     </ol>
   </aside>
-  <script>
-    (() => {
-      const layer = document.getElementById('mosaic');
-      let resizeTimer;
-
-      function buildMosaic() {
-        const tileWidth = window.innerWidth <= 600 ? 76 : 96;
-        const tileHeight = window.innerWidth <= 600 ? 44 : 54;
-        const gapY = window.innerWidth <= 600 ? 6 : 8;
-        const rows = Math.ceil((window.innerHeight + 220) / (tileHeight + gapY)) + 1;
-        const fragment = document.createDocumentFragment();
-
-        for (let row = 0; row < rows; row++) {
-          const line = document.createElement('div');
-          line.className = `mosaic-row${row % 2 ? ' staggered reverse' : ''}`;
-          line.style.top = `${row * (tileHeight + gapY) - 110}px`;
-          line.style.setProperty('--row-width', `${window.innerWidth * 2 + tileWidth * 2}px`);
-          line.style.setProperty('--duration', `${48 + (row % 3) * 8}s`);
-          line.style.setProperty('--delay', `${-(row % 9) * 2}s`);
-          fragment.appendChild(line);
-        }
-
-        layer.replaceChildren(fragment);
-      }
-
-      buildMosaic();
-      window.addEventListener('resize', () => {
-        window.clearTimeout(resizeTimer);
-        resizeTimer = window.setTimeout(buildMosaic, 160);
-      }, { passive: true });
-    })();
-  </script>
 </body>
 </html>
