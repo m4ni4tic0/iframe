@@ -40,26 +40,15 @@
       from { opacity:.52; filter:brightness(.78) drop-shadow(0 0 4px #ff00b855) drop-shadow(0 0 7px #592cff44); }
       to { opacity:1; filter:brightness(1.25) drop-shadow(0 0 8px #ff00b899) drop-shadow(0 0 15px #00eaff88); }
     }
-    .rules-toggle {
-      position:fixed; z-index:3; top:50%; right:0; transform:translateY(-50%);
-      padding:15px 12px; border:1px solid #00eaffaa; border-right:0; border-radius:12px 0 0 12px;
-      color:#fff; background:linear-gradient(135deg,#211044ee,#071c2bee);
-      box-shadow:0 0 18px #00eaff55,0 0 24px #ff00b833; cursor:pointer;
-      font:700 12px Arial,Helvetica,sans-serif; letter-spacing:.12em; writing-mode:vertical-rl;
-      transition:opacity .2s ease,visibility .2s ease,box-shadow .2s ease;
-    }
-    .rules-toggle.is-hidden { opacity:0; visibility:hidden; pointer-events:none; }
-    .rules-toggle:hover,.rules-toggle:focus-visible { outline:none; box-shadow:0 0 24px #00eaffaa,0 0 30px #ff00b866; }
     .rules-panel {
       position:fixed; z-index:4; top:50%; right:max(16px,env(safe-area-inset-right));
-      width:min(410px,calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+      width:min(350px,calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));
       height:auto; max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px);
-      display:flex; flex-direction:column; padding:28px 24px 22px;
+      display:flex; flex-direction:column; padding:20px 18px 16px;
       color:#fff; background:linear-gradient(155deg,#130b25e8,#090d1ce8 65%,#071b27e8);
       border:1px solid transparent; border-radius:28px;
       box-shadow:-14px 0 38px #0009,0 0 26px #ff00b844;
-      transform:translate(110%,-50%); visibility:hidden;
-      transition:transform .45s cubic-bezier(.2,.8,.2,1),visibility .45s;
+      transform:translateY(-50%);
       overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y;
       scrollbar-width:none; -ms-overflow-style:none;
     }
@@ -73,28 +62,22 @@
       animation:border-breathe 2.8s ease-in-out infinite alternate;
     }
     .rules-panel > * { position:relative; z-index:1; }
-    .rules-panel.open { transform:translate(0,-50%); visibility:visible; }
-    .rules-heading { display:flex; justify-content:space-between; align-items:center; gap:14px; padding-bottom:18px; border-bottom:1px solid #00eaff55; }
+    .rules-heading { display:flex; justify-content:space-between; align-items:center; gap:14px; padding-bottom:13px; border-bottom:1px solid #00eaff55; }
     .rules-heading h2 { margin:0; color:#fff; font-size:clamp(16px,5vw,21px); letter-spacing:.08em; text-transform:uppercase; text-shadow:0 0 14px #ff00b877; overflow-wrap:anywhere; }
     .rules-heading h2 span { color:var(--cyan); }
-    .rules-close { width:40px; height:40px; flex:none; display:grid; place-items:center; border:1px solid #ff00b888; border-radius:50%; color:#fff; background:#ff00b81a; font-size:17px; cursor:pointer; transition:transform .25s ease,background .25s ease,box-shadow .25s ease,color .25s ease; }
-    .rules-close:hover,.rules-close:focus-visible { outline:none; color:#080612; background:var(--pink); transform:rotate(90deg) scale(1.08); box-shadow:0 0 18px #ff00b899,0 0 25px #00eaff55; }
-    .rules-list { display:grid; gap:10px; margin:22px 0 0; padding:0; list-style:none; counter-reset:rule; }
-    .rules-list li { counter-increment:rule; display:grid; grid-template-columns:24px 27px minmax(0,1fr); align-items:center; gap:9px; padding:11px 12px; border:1px solid #ffffff16; border-radius:13px; color:#e9e6f2; background:linear-gradient(100deg,#ff00b812,#00eaff0b); font-size:14px; line-height:1.4; overflow-wrap:anywhere; transition:transform .22s ease,border-color .22s ease,background .22s ease,box-shadow .22s ease; }
+    .rules-list { display:grid; gap:7px; margin:14px 0 0; padding:0; list-style:none; counter-reset:rule; }
+    .rules-list li { counter-increment:rule; display:grid; grid-template-columns:22px 24px minmax(0,1fr); align-items:center; gap:7px; padding:8px 9px; border:1px solid #ffffff16; border-radius:12px; color:#e9e6f2; background:linear-gradient(100deg,#ff00b812,#00eaff0b); font-size:13px; line-height:1.35; overflow-wrap:anywhere; transition:transform .22s ease,border-color .22s ease,background .22s ease,box-shadow .22s ease; }
     .rules-list li::before { content:counter(rule,decimal-leading-zero); color:var(--cyan); font-weight:700; text-shadow:0 0 10px #00eaff88; }
     .rules-list li:hover { transform:translateX(-5px); border-color:#00eaff99; background:linear-gradient(100deg,#ff00b82a,#00eaff20); box-shadow:0 0 17px #00eaff20,0 0 15px #ff00b81c; }
     .rule-icon { color:#ff56d1; font-size:15px; text-align:center; filter:drop-shadow(0 0 5px #ff00b866); transition:color .22s ease,transform .22s ease; }
     .rules-list li:hover .rule-icon { color:var(--cyan); transform:scale(1.16); }
-    .rules-footer { margin-top:auto; padding:18px 14px 2px; color:#f3ddec; border-top:1px solid #ff00b84d; font-size:clamp(12px,3.5vw,13px); line-height:1.55; text-align:center; overflow-wrap:anywhere; }
+    .rules-footer { margin-top:12px; padding:13px 8px 0; color:#f3ddec; border-top:1px solid #ff00b84d; font-size:clamp(12px,3.5vw,13px); line-height:1.5; text-align:center; overflow-wrap:anywhere; }
     .rules-footer i { margin-right:7px; color:var(--pink); }
-    .rules-backdrop { position:fixed; z-index:2; inset:0; background:transparent; opacity:0; visibility:hidden; transition:visibility .35s; }
-    .rules-backdrop.open { opacity:1; visibility:visible; }
     .rules-footer-site { display:block; margin-top:8px; color:var(--cyan); font-weight:700; letter-spacing:.08em; text-decoration:none; text-shadow:0 0 10px #00eaff77; }
     .rules-footer-site:hover { color:#fff; }
     @media (max-width:600px) {
       :root { --tile-w:188px; --tile-h:88px; }
-      .rules-toggle { padding:13px 9px; font-size:11px; }
-      .rules-panel { top:50%; right:max(8px,env(safe-area-inset-right)); width:calc(100vw - 16px - env(safe-area-inset-left) - env(safe-area-inset-right)); max-height:calc(100vh - 24px); max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px); padding:clamp(16px,5vw,22px) clamp(12px,4vw,16px) 16px; border-radius:24px; }
+      .rules-panel { top:50%; right:max(8px,env(safe-area-inset-right)); width:min(330px,calc(100vw - 16px - env(safe-area-inset-left) - env(safe-area-inset-right))); max-height:calc(100vh - 24px); max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px); padding:16px 13px 13px; border-radius:24px; }
       .rules-heading { gap:8px; padding-bottom:14px; }
       .rules-list { gap:8px; margin-top:15px; }
       .rules-list li { grid-template-columns:22px 23px minmax(0,1fr); gap:7px; padding:9px 8px; font-size:13px; }
@@ -107,7 +90,7 @@
       .rules-list li { padding-top:7px; padding-bottom:7px; }
       .rules-footer { padding-top:10px; }
     }
-    @media (prefers-reduced-motion:reduce) { .rules-panel,.rules-backdrop,.rules-close,.rules-list li,.rule-icon { transition:none; }.rules-panel::before { animation-duration:18s; } }
+    @media (prefers-reduced-motion:reduce) { .rules-list li,.rule-icon { transition:none; }.rules-panel::before { animation-duration:18s; } }
     body {
       display:grid; place-items:center; padding:24px;
       color:#fff; font-family:Arial,Helvetica,sans-serif;
@@ -116,12 +99,9 @@
 </head>
 <body>
   <div class="mosaic" id="mosaic" aria-hidden="true"></div>
-  <button class="rules-toggle" id="rulesToggle" type="button" aria-controls="rulesPanel" aria-expanded="false">NORMATIVAS</button>
-  <div class="rules-backdrop" id="rulesBackdrop"></div>
-  <aside class="rules-panel" id="rulesPanel" role="dialog" aria-modal="true" aria-labelledby="rulesTitle" aria-hidden="true">
+  <aside class="rules-panel" id="rulesPanel" role="complementary" aria-labelledby="rulesTitle">
     <div class="rules-heading">
       <h2 id="rulesTitle">Normativas <span>Generales</span></h2>
-      <button class="rules-close" id="rulesClose" type="button" aria-label="Cerrar normativas"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
     </div>
     <ol class="rules-list">
       <li><i class="rule-icon fa-solid fa-comment-slash" aria-hidden="true"></i><span>No Insultar.</span></li>
@@ -140,28 +120,7 @@
   <script>
     (() => {
       const layer = document.getElementById('mosaic');
-      const rulesPanel = document.getElementById('rulesPanel');
-      const rulesToggle = document.getElementById('rulesToggle');
-      const rulesClose = document.getElementById('rulesClose');
-      const rulesBackdrop = document.getElementById('rulesBackdrop');
       let resizeTimer;
-
-      function setRulesOpen(open) {
-        rulesPanel.classList.toggle('open', open);
-        rulesBackdrop.classList.toggle('open', open);
-        rulesToggle.classList.toggle('is-hidden', open);
-        rulesPanel.setAttribute('aria-hidden', String(!open));
-        rulesToggle.setAttribute('aria-expanded', String(open));
-        if (open) rulesClose.focus();
-        else rulesToggle.focus();
-      }
-
-      rulesToggle.addEventListener('click', () => setRulesOpen(true));
-      rulesClose.addEventListener('click', () => setRulesOpen(false));
-      rulesBackdrop.addEventListener('click', () => setRulesOpen(false));
-      document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && rulesPanel.classList.contains('open')) setRulesOpen(false);
-      });
 
       function buildMosaic() {
         const tileWidth = window.innerWidth <= 600 ? 188 : 250;
