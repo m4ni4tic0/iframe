@@ -35,6 +35,15 @@
       background-size:var(--tile-w) auto; background-position:0 center;
     }
     .mosaic-line.staggered { background-position:calc(var(--tile-w) / 2) center; }
+    .snowfall { position:fixed; z-index:2; inset:0; overflow:hidden; pointer-events:none; }
+    .snowflake {
+      position:absolute; top:-8px; left:var(--snow-x); width:var(--snow-size); height:var(--snow-size);
+      border-radius:50%; background:#fff; opacity:var(--snow-opacity);
+      box-shadow:0 0 5px #d9f8ffcc,0 0 10px #d9f8ff66;
+      animation:snow-fall var(--snow-duration) linear var(--snow-delay) infinite;
+      will-change:transform;
+    }
+    @keyframes snow-fall { to { transform:translate3d(var(--snow-drift),calc(100vh + 24px),0); } }
     @keyframes diagonal-drift { from { transform:translate3d(0,100vh,0); } to { transform:translate3d(100vw,0,0); } }
     @keyframes aurora { from { transform:translate3d(-2%,0,0) scale(.96); opacity:.75; } to { transform:translate3d(2%,-2%,0) scale(1.08); opacity:1; } }
     @keyframes gradient-breathe { from { background-position:0% 50%; } to { background-position:100% 50%; } }
@@ -51,7 +60,7 @@
       border:1px solid transparent; border-radius:28px;
       box-shadow:-14px 0 38px #0009,0 0 26px #ff00b844;
       transform:translateY(-50%);
-      overflow:hidden;
+      overflow:visible;
     }
     .rules-panel::before {
       content:""; position:absolute; z-index:0; inset:-1px; padding:2px; border-radius:inherit;
@@ -62,6 +71,7 @@
       animation:border-breathe 2.8s ease-in-out infinite alternate;
     }
     .rules-panel > * { position:relative; z-index:1; }
+    .rules-panel > .christmas-hat { position:absolute; z-index:3; top:-27px; left:-42px; width:62px; height:auto; transform:rotate(-17deg); filter:drop-shadow(0 3px 5px #0008); pointer-events:none; }
     .rules-heading { display:flex; justify-content:center; align-items:center; gap:5px; padding-bottom:6px; border-bottom:1px solid #00eaff55; text-align:center; }
     .rules-heading h2 { width:100%; margin:0; color:#fff; font-size:12px; letter-spacing:.035em; text-transform:uppercase; text-align:center; text-shadow:0 0 14px #ff00b877; overflow-wrap:anywhere; }
     .rules-heading h2 span { color:var(--cyan); }
@@ -74,6 +84,7 @@
     @media (max-width:600px) {
       :root { --tile-w:76px; --tile-h:50px; }
       .rules-panel { top:50%; right:max(6px,env(safe-area-inset-right)); width:min(205px,calc(100vw - 12px - env(safe-area-inset-left) - env(safe-area-inset-right))); padding:10px 7px 7px; border-radius:20px; }
+      .rules-panel > .christmas-hat { top:-22px; left:-34px; width:58px; }
       .rules-heading { gap:4px; padding-bottom:5px; }
       .rules-list { gap:3px; margin-top:5px; }
       .rules-list li { grid-template-columns:16px 18px minmax(0,1fr); gap:5px; padding:4px; font-size:9.5px; }
@@ -94,7 +105,9 @@
 </head>
 <body>
   <div class="mosaic" aria-hidden="true"><div class="mosaic-pattern" id="mosaicPattern"></div></div>
+  <div class="snowfall" id="snowfall" aria-hidden="true"></div>
   <aside class="rules-panel" id="rulesPanel" role="complementary" aria-labelledby="rulesTitle">
+    <img class="christmas-hat" src="gorro-navidad.png" alt="" aria-hidden="true" draggable="false">
     <div class="rules-heading">
       <h2 id="rulesTitle">Normativas <span>Generales</span></h2>
     </div>
@@ -114,6 +127,7 @@
   <script>
     (() => {
       const pattern = document.getElementById('mosaicPattern');
+      const snowfall = document.getElementById('snowfall');
       let resizeTimer;
 
       function buildMosaicLines() {
@@ -131,6 +145,20 @@
       }
 
       buildMosaicLines();
+      const flakeCount = Math.min(24, Math.max(12, Math.round(window.innerWidth / 60)));
+      const snow = document.createDocumentFragment();
+      for (let index = 0; index < flakeCount; index++) {
+        const flake = document.createElement('span');
+        flake.className = 'snowflake';
+        flake.style.setProperty('--snow-x', `${Math.random() * 100}%`);
+        flake.style.setProperty('--snow-size', `${2 + Math.random() * 2.5}px`);
+        flake.style.setProperty('--snow-opacity', `${0.35 + Math.random() * 0.5}`);
+        flake.style.setProperty('--snow-duration', `${12 + Math.random() * 12}s`);
+        flake.style.setProperty('--snow-delay', `${-Math.random() * 24}s`);
+        flake.style.setProperty('--snow-drift', `${-35 + Math.random() * 70}px`);
+        snow.appendChild(flake);
+      }
+      snowfall.appendChild(snow);
       window.addEventListener('resize', () => {
         window.clearTimeout(resizeTimer);
         resizeTimer = window.setTimeout(buildMosaicLines, 180);
